@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Status from "../../pages/Status";
+import NavTabs from "../../pages/NavTabs";
 import Layout from "../Layout/Layout";
 import NotFound from "../../pages/NotFound";
 
@@ -10,7 +10,7 @@ const App = () => {
             <Router>
                 <Layout>
                     <Routes>
-                        <Route exact path="/" element={<Status/>} />
+                        <Route exact path="/" element={<NavTabs/>} />
                         <Route path="*" element={<NotFound/>} />
                     </Routes>
                 </Layout>

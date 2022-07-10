@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import LoginForm from "../../pages/LoginForm";
-import Header from "../../pages/Header";
+import Header from "../Header/Header";
 import apiClient from "../../service/site-service";
 import {Login, Error} from "../../reducers";
 

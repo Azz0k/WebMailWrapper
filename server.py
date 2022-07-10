@@ -7,7 +7,6 @@ from CGPCLI.Errors import FailedLogin
 
 
 app = Flask(__name__)
-
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config.update(DEBUG=True,
                   SECRET_KEY='3e33a45081c21b6b7a958094726f8b5c4aa6a098a71fc3c2782b5d2e59a18886',
@@ -15,9 +14,7 @@ app.config.update(DEBUG=True,
                   REMEMBER_COOKIE_HTTPONLY=True,
                   SESSION_COOKIE_SAMESITE='Strict',
                   )
-# app.secret_key = '3e33a45081c21b6b7a958094726f8b5c4aa6a098a71fc3c2782b5d2e59a18886'
 flask_cors.CORS(app, supports_credentials=True)
-
 regex = re.compile(r'[\w.]+@\w+\.ru')
 
 
@@ -30,12 +27,6 @@ def handle_exception(e):
         "description": e.description,
     })
     response.content_type = "application/json"
-    return response
-
-
-# @app.after_request
-def add_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
     return response
 
 
