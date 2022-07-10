@@ -1,0 +1,17 @@
+.login-input {
+    margin-top: 10px;
+}
+.login-form{
+ height: 100vh;
+}
+
+.logo{
+    color: #576ea2;
+    text-decoration: none;
+    background-color: transparent;
+}
+.logoContainer {
+    background-color: #374676;
+    padding-top: 10px;
+
+}
