@@ -1,9 +1,58 @@
-import React from "react";
+import React,{useEffect, useState}  from "react";
 import Status from "../components/Status/Status";
+import {useDispatch, useSelector} from "react-redux";
+import apiClient from "../service";
+import {Error} from "../reducers";
+import UsersList from "../components/UsersList/UsersList";
+
+const SelectDomain =({domains, selectedDomain})=>{
+    const options = domains.map((element,index) =>
+            <option value={element} key={index}>{element}</option>
+    );
+    return(
+            <select className="form-select form-select-sm w-25" aria-label="Domains select" value={selectedDomain}>
+                {options}
+            </select>
+    );
+};
+
+
+
+
+
 
 const NavTabs = () => {
+    const dispatch = useDispatch();
+    const [users, setUsers] = useState({});
+    const [domains, setDomains] = useState([]);
+    const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
+    useEffect(()=>{
+        apiClient.get('/users')
+            .then(response => {
+             setUsers(response.data);
+             let temp =[];
+             for (const key in response.data){
+                 temp.push(key);
+             }
+             setDomains(temp);
+            })
+            .catch(error=> dispatch(Error(error.message)));
+        },[]
+    );
+
     return(
       <>
+          <nav className="navbar bg-light mt-3">
+            <div className="container-fluid">
+                <a className="navbar-brand">Select domain:</a>
+                <SelectDomain domains={domains} selectedDomain={selectedDomain}/>
+                <form className="d-flex" role="search">
+                    <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                        <button className="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+          </nav>
+
           <div className="d-flex align-items-start mt-3">
               <div className="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist"
                    aria-orientation="vertical">
@@ -31,10 +80,11 @@ const NavTabs = () => {
               <div className="tab-content" id="v-pills-tabContent">
                   <div className="tab-pane fade show active" id="v-pills-home" role="tabpanel"
                        aria-labelledby="v-pills-home-tab" tabIndex="0">
-                      <Status />
+                      <Status users={users}/>
                   </div>
                   <div className="tab-pane fade" id="v-pills-profile" role="tabpanel"
-                       aria-labelledby="v-pills-profile-tab" tabIndex="0">2
+                       aria-labelledby="v-pills-profile-tab" tabIndex="0">
+                      <UsersList users={users} />
                   </div>
                   <div className="tab-pane fade" id="v-pills-disabled" role="tabpanel"
                        aria-labelledby="v-pills-disabled-tab" tabIndex="0">3

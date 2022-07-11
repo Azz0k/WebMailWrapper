@@ -13,5 +13,8 @@
 .logoContainer {
     background-color: #374676;
     padding-top: 10px;
+}
 
+.vw-90{
+    width: 90vw;
 }

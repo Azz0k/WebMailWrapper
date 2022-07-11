@@ -1,19 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../../service";
-import {Error, Login} from "../../reducers";
+import {Error} from "../../reducers";
 
-const Status = () => {
-    const dispatch = useDispatch();
-    const [users, setUsers] = useState({});
-
+const Status = ({users}) => {
     const username = useSelector(state => state.userdata.username)
-    useEffect(()=>{
-        apiClient.get('/users')
-            .then(response => setUsers(response.data))
-            .catch(error=> dispatch(Error(error.message)));
-        },[]
-    );
     const usersLength = () => {
         let result = 0;
         for (const key in users) {

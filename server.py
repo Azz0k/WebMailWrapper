@@ -32,7 +32,7 @@ def handle_exception(e):
 
 @app.route('/')
 def hello_world():
-    return '<p>Hello, World!</p>'
+    return "Hello, %s" % session['username']
 
 
 @app.route('/api/users', methods=['GET'])
@@ -83,4 +83,4 @@ def login():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')

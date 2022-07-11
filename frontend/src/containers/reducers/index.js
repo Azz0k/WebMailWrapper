@@ -25,7 +25,8 @@ const usersByDomains = createSlice({
         Logout: (state, action) => {
             state.isAuthenticated = false;
             state.userdata = initialState.userdata;
-    },
+            state.error = null
+        },
 }
 });
 
