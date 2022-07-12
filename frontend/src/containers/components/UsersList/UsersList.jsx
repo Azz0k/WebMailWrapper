@@ -3,16 +3,12 @@ import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../../service";
 import {Error} from "../../reducers";
 
-const UsersList = () => {
-
+const UsersList = ({users}) => {
+    const listItems = users.map((el, index)=> <li className="list-group-item vw-90" key={index}>{el}</li>);
     return(
         <>
             <ul className="list-group">
-                <li className="list-group-item active vw-90" aria-current="true">An active item</li>
-                <li className="list-group-item">A second item</li>
-                <li className="list-group-item">A third item</li>
-                <li className="list-group-item">A fourth item</li>
-                <li className="list-group-item">And a fifth one</li>
+                {listItems}
             </ul>
         </>
     );

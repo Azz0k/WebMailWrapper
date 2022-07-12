@@ -16,11 +16,6 @@ const SelectDomain =({domains, selectedDomain})=>{
     );
 };
 
-
-
-
-
-
 const NavTabs = () => {
     const dispatch = useDispatch();
     const [users, setUsers] = useState({});
@@ -84,7 +79,7 @@ const NavTabs = () => {
                   </div>
                   <div className="tab-pane fade" id="v-pills-profile" role="tabpanel"
                        aria-labelledby="v-pills-profile-tab" tabIndex="0">
-                      <UsersList users={users} />
+                      <UsersList users={users[selectedDomain]} />
                   </div>
                   <div className="tab-pane fade" id="v-pills-disabled" role="tabpanel"
                        aria-labelledby="v-pills-disabled-tab" tabIndex="0">3
