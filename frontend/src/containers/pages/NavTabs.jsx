@@ -5,12 +5,12 @@ import apiClient from "../service";
 import {Error} from "../reducers";
 import UsersList from "../components/UsersList/UsersList";
 
-const SelectDomain =({domains, selectedDomain})=>{
+const SelectDomain =({domains, selectedDomain, onChange})=>{
     const options = domains.map((element,index) =>
             <option value={element} key={index}>{element}</option>
     );
     return(
-            <select className="form-select form-select-sm w-25" aria-label="Domains select" value={selectedDomain}>
+            <select className="form-select form-select-sm w-25" aria-label="Domains select" value={selectedDomain} onChange={onChange}>
                 {options}
             </select>
     );
@@ -19,6 +19,7 @@ const SelectDomain =({domains, selectedDomain})=>{
 const NavTabs = () => {
     const dispatch = useDispatch();
     const [users, setUsers] = useState({});
+    const [userData, setUserData] = useState({});
     const [domains, setDomains] = useState([]);
     const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
     useEffect(()=>{
@@ -34,13 +35,15 @@ const NavTabs = () => {
             .catch(error=> dispatch(Error(error.message)));
         },[]
     );
-
+    const handleChangeDomain = (event) => {
+        setSelectedDomain(event.target.value);
+    };
     return(
       <>
-          <nav className="navbar bg-light mt-3">
+          <nav className="navbar bg-light m-1000">
             <div className="container-fluid">
                 <a className="navbar-brand">Select domain:</a>
-                <SelectDomain domains={domains} selectedDomain={selectedDomain}/>
+                <SelectDomain domains={domains} selectedDomain={selectedDomain} onChange={(e)=>handleChangeDomain(e)} />
                 <form className="d-flex" role="search">
                     <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
                         <button className="btn btn-outline-success" type="submit">Search</button>

@@ -91,6 +91,14 @@ class CGPROHelper:
     def set_mailbox_aliases(self, account_name: str, new_aliases: dict):
         return self.__server.set_mailbox_aliases(account_name, new_aliases)
 
+    @get_function
+    def get_user_settings(self, account_name: str, domain_name: str='energospb.ru'):
+        keys_to_return = ['AuthURI', 'description', 'l', 'MaxAccountSize', 'ou', 'RealName']
+        if '@' not in account_name:
+            account_name = '{}@{}'.format(account_name, domain_name)
+        temp = self.__server.get_account_effective_settings(account_name)['body']
+        return {key: temp[key] for key in temp if key in keys_to_return}
+
     def get_all_users_by_domains(self) -> dict:
         return {domain: [user for user in self.get_users(domain)] for domain in self.get_domains()}
 
@@ -139,6 +147,12 @@ def test_get_set_acl2(calendar_username: str = 'testpublic@energospb.ru'):
             helper.set_mailbox_aliases(test_user2, {calendar: helper.mailbox_alias(calendar_username, calendar)})
 
 
+def test_get_account_settings():
+    password: str = keyring.get_password(system_name, username)
+    helper: CGPROHelper = CGPROHelper(username, password)
+    test_user = 'milokum.pavel@energospb.ru'
+    print(helper.get_user_settings(test_user))
+
 def test_get_set_acl():
     password: str = keyring.get_password(system_name, username)
     helper: CGPROHelper = CGPROHelper(username, password)
@@ -173,4 +187,6 @@ if __name__ == '__main__':
         except Exception as error:
             print('Error: {}'.format(error))
     else:
-        print(get_all_users_by_domains())
+        test_get_account_settings()
+
+
