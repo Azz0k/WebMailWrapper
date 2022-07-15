@@ -22,11 +22,11 @@ const queryClient = new QueryClient({
 const container = document.getElementById('content');
 const root = createRoot(container);
 root.render(
-    <StrictMode>
+
         <Provider store={store}>
              <QueryClientProvider client={queryClient}>
                  <App/>
              </QueryClientProvider>
         </Provider>
-    </StrictMode>
+
 );

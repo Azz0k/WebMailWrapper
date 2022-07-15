@@ -1,4 +1,3 @@
-from multiprocessing import Pool
 import itertools
 import concurrent.futures
 from timeit import default_timer as timer
@@ -33,7 +32,7 @@ class CGPROHelper:
         self.__server.disconnect()
 
     @staticmethod
-    def get_function(method: Callable) -> Any:
+    def get_method(method: Callable) -> Any:
         def wrapper(self, *args) -> dict:
             self.__connect()
             result = method(self, *args)
@@ -56,23 +55,23 @@ class CGPROHelper:
     def mailbox_alias(user_name, mailbox_name_raw):
         return '~{}/{}'.format(user_name, mailbox_name_raw)
 
-    @get_function
+    @get_method
     def get_domains(self) -> list:
         return self.__server.list_domains()['body']
 
-    @get_function
+    @get_method
     def get_users(self, domain_name: str) -> list:
         return list(self.__server.list_accounts(domain_name)['body'].keys())
 
-    @get_function
+    @get_method
     def get_groups(self, domain_name: str) -> list:
         return self.__server.list_groups(domain_name)['body']
 
-    @get_function
+    @get_method
     def get_group(self, group_name: str, domain_name: str) -> dict:
         return self.__server.get_group(group_name + '@' + domain_name)['body']
 
-    @get_function
+    @get_method
     def get_mailbox_rights(self, account_name: str, mailbox_name: str, auth_account_name: str) -> str:
         mailbox_name = CGPROHelper.mailbox_name_quoted(mailbox_name)
         rights = self.__server.get_mailbox_ACL(account_name, mailbox_name, None, None)['body']
@@ -81,21 +80,21 @@ class CGPROHelper:
                 return rights[key]
         return ''
 
-    @get_function
+    @get_method
     def get_mailboxes(self, account_name) -> dict:
         return self.__server.list_mailboxes(account_name)['body']
 
-    @get_function
+    @get_method
     def set_mailbox_rights(self, account_name: str, mailbox_name: str, auth_account_name: str):
         mailbox_name = CGPROHelper.mailbox_name_quoted(mailbox_name)
         new_acl = {auth_account_name: CGPROHelper.get_rights()}
         return self.__server.set_mailbox_ACL(account_name, mailbox_name, new_acl)
 
-    @get_function
+    @get_method
     def set_mailbox_aliases(self, account_name: str, new_aliases: dict):
         return self.__server.set_mailbox_aliases(account_name, new_aliases)
 
-    @get_function
+    @get_method
     def get_user_settings(self, account_name: str, domain_name: str = 'energospb.ru'):
         keys_to_return = ['description', 'MaxAccountSize', 'ou', 'RealName']
         if '@' not in account_name:

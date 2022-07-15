@@ -1,3 +1,4 @@
+import itertools
 from tempfile import mkdtemp
 from flask import request, Flask, json, jsonify, abort, session
 import flask_cors
@@ -6,6 +7,8 @@ from werkzeug.exceptions import HTTPException
 import re
 from CGPCLI.Errors import FailedLogin, ConnectionTimeOut
 from flask_session import Session
+from typing import *
+import concurrent.futures
 
 
 app = Flask(__name__)
@@ -20,7 +23,9 @@ flask_cors.CORS(app, supports_credentials=True)
 app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+# Раскоментировать при переносе на рабочий сервер, чтобы session сохранялась на сервере
+# иначе логин и пароль хранится в куке в браузере, не надо вводить каждый раз при рестарте dev сервера
+#Session(app)
 regex = re.compile(r'[\w.]+@\w+\.ru')
 
 if app.config["DEBUG"]:
@@ -30,6 +35,27 @@ if app.config["DEBUG"]:
         response.headers["Expires"] = 0
         response.headers["Pragma"] = "no-cache"
         return response
+
+
+def clear_session_data():
+    session.pop('username', None)
+    session.pop('password', None)
+
+
+def get_function(function: Callable) -> Any:
+    def wrapper(*args):
+        result = None
+        if ('username' not in session) and ('password' not in session):
+            abort(401)
+        try:
+            result = function(*args)
+        except TimeoutError:
+            abort(500, description="Timeout ")
+        except (FailedLogin, ConnectionTimeOut):
+            clear_session_data()
+            abort(401)
+        return jsonify(result)
+    return wrapper
 
 
 @app.errorhandler(HTTPException)
@@ -44,30 +70,31 @@ def handle_exception(e):
     return response
 
 
-@app.route('/')
-def hello_world():
-    return "Hello, %s" % session['username']
+def user_setting_pool_worker(*args):
+    account_name, u_n, u_p = args[0]
+    local_helper: helper.CGPROHelper = helper.CGPROHelper(u_n, u_p)
+    return local_helper.get_user_settings(account_name)
 
-
-@app.route('/api/users', methods=['GET'])
-def all_users():
-    users = None
-    if 'username' not in session:
-        abort(401)
+#TODO fix account name - add domain name
+@get_function
+@app.route('/api/1.0/<string:domain_name>', methods=['GET'])
+def get_users_settings(domain_name):
     mail_serv: helper.CGPROHelper = helper.CGPROHelper(session['username'], session['password'])
-    try:
-        users = mail_serv.get_all_users_by_domains()
-    except TimeoutError:
-        abort(500, description="Timeout ")
-    except (FailedLogin, ConnectionTimeOut):
-        clear_session_data()
-        abort(401)
-    return jsonify(users)
+    users_names = mail_serv.get_users(domain_name)
+    temp_tuple = zip(users_names, itertools.repeat(session['username']),
+                     itertools.repeat(session['password']))
+
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        users_data = dict(zip(users_names, executor.map(user_setting_pool_worker, temp_tuple)))
+    return users_data
 
 
-def clear_session_data():
-    session.pop('username', None)
-    session.pop('password', None)
+@get_function
+@app.route('/api/users', methods=['GET'])
+def new_all_users():
+    mail_serv: helper.CGPROHelper = helper.CGPROHelper(session['username'], session['password'])
+    users = mail_serv.get_all_users_by_domains()
+    return users
 
 
 @app.route('/api/logout')

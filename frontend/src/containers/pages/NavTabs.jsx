@@ -82,7 +82,7 @@ const NavTabs = () => {
                   </div>
                   <div className="tab-pane fade" id="v-pills-profile" role="tabpanel"
                        aria-labelledby="v-pills-profile-tab" tabIndex="0">
-                      <UsersList users={users[selectedDomain]} />
+                      <UsersList users={users[selectedDomain]} domain={selectedDomain}/>
                   </div>
                   <div className="tab-pane fade" id="v-pills-disabled" role="tabpanel"
                        aria-labelledby="v-pills-disabled-tab" tabIndex="0">3
