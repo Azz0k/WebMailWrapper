@@ -1,4 +1,6 @@
 from multiprocessing import Pool
+import itertools
+import concurrent.futures
 from timeit import default_timer as timer
 import argparse
 import CGPCLI
@@ -149,22 +151,23 @@ def test_get_set_acl2(calendar_username: str = 'testpublic@energospb.ru'):
             helper.set_mailbox_aliases(test_user2, {calendar: helper.mailbox_alias(calendar_username, calendar)})
 
 
-def get_one_acc_setting(account_name):
-    #TODO дописать. Вызывать процедуру можно только из верха модуля
-    password: str = keyring.get_password(system_name, username)
-    local_helper: CGPROHelper = CGPROHelper(username, password)
+def get_one_acc_setting(*args):
+    account_name, u_n, u_p = args[0]
+    local_helper: CGPROHelper = CGPROHelper(u_n, u_p)
     return local_helper.get_user_settings(account_name)
 
 
 def test_get_account_settings():
     password: str = keyring.get_password(system_name, username)
     helper: CGPROHelper = CGPROHelper(username, password)
+    start = timer()
     domain_name = 'energospb.ru'
     users_names = helper.get_users(domain_name)
-    start = timer()
-    with Pool(15) as executor:
-        users_data = dict(zip(users_names, executor.map(get_one_acc_setting, users_names)))
-    # print(helper.get_user_settings(test_user))
+    temp_tuple = zip(users_names, itertools.repeat(username),
+                     itertools.repeat(password))
+
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        users_data = dict(zip(users_names, executor.map(get_one_acc_setting, temp_tuple)))
     end = timer()
     print(users_data)
     print(end-start)
