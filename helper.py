@@ -1,3 +1,5 @@
+from multiprocessing import Pool
+from timeit import default_timer as timer
 import argparse
 import CGPCLI
 import keyring
@@ -92,8 +94,8 @@ class CGPROHelper:
         return self.__server.set_mailbox_aliases(account_name, new_aliases)
 
     @get_function
-    def get_user_settings(self, account_name: str, domain_name: str='energospb.ru'):
-        keys_to_return = ['AuthURI', 'description', 'l', 'MaxAccountSize', 'ou', 'RealName']
+    def get_user_settings(self, account_name: str, domain_name: str = 'energospb.ru'):
+        keys_to_return = ['description', 'MaxAccountSize', 'ou', 'RealName']
         if '@' not in account_name:
             account_name = '{}@{}'.format(account_name, domain_name)
         temp = self.__server.get_account_effective_settings(account_name)['body']
@@ -147,11 +149,26 @@ def test_get_set_acl2(calendar_username: str = 'testpublic@energospb.ru'):
             helper.set_mailbox_aliases(test_user2, {calendar: helper.mailbox_alias(calendar_username, calendar)})
 
 
+def get_one_acc_setting(account_name):
+    #TODO дописать. Вызывать процедуру можно только из верха модуля
+    password: str = keyring.get_password(system_name, username)
+    local_helper: CGPROHelper = CGPROHelper(username, password)
+    return local_helper.get_user_settings(account_name)
+
+
 def test_get_account_settings():
     password: str = keyring.get_password(system_name, username)
     helper: CGPROHelper = CGPROHelper(username, password)
-    test_user = 'milokum.pavel@energospb.ru'
-    print(helper.get_user_settings(test_user))
+    domain_name = 'energospb.ru'
+    users_names = helper.get_users(domain_name)
+    start = timer()
+    with Pool(15) as executor:
+        users_data = dict(zip(users_names, executor.map(get_one_acc_setting, users_names)))
+    # print(helper.get_user_settings(test_user))
+    end = timer()
+    print(users_data)
+    print(end-start)
+
 
 def test_get_set_acl():
     password: str = keyring.get_password(system_name, username)

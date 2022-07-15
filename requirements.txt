@@ -3,3 +3,4 @@ flask-cors
 CGPCLI~=1.1.9
 keyring~=23.6.0
 Werkzeug~=2.1.2
+Flask-Session
