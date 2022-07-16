@@ -71,17 +71,19 @@ def handle_exception(e):
 
 
 def user_setting_pool_worker(*args):
-    account_name, u_n, u_p = args[0]
+    account_name, d_n, u_n, u_p = args[0]
     local_helper: helper.CGPROHelper = helper.CGPROHelper(u_n, u_p)
-    return local_helper.get_user_settings(account_name)
+    return local_helper.get_user_settings(account_name, d_n)
 
-#TODO fix account name - add domain name
+
 @get_function
 @app.route('/api/1.0/<string:domain_name>', methods=['GET'])
 def get_users_settings(domain_name):
     mail_serv: helper.CGPROHelper = helper.CGPROHelper(session['username'], session['password'])
     users_names = mail_serv.get_users(domain_name)
-    temp_tuple = zip(users_names, itertools.repeat(session['username']),
+    temp_tuple = zip(users_names,
+                     itertools.repeat(domain_name),
+                     itertools.repeat(session['username']),
                      itertools.repeat(session['password']))
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
