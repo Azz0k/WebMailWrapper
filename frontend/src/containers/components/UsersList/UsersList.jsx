@@ -26,6 +26,7 @@ const check_undefined = (sourceObj, firstKey, secondKey, length) => {
 
 const UsersList = ({users, domain}) => {
     const [usersSettings, setUserSettings] = useState({});
+    const [selectedUser, setSelectedUser] = useState(0);
     const dispatch = useDispatch();
     useEffect(()=>{
         apiClient.get("/1.0/"+domain)
@@ -37,7 +38,8 @@ const UsersList = ({users, domain}) => {
     },[users]);
 
     const listItems = users===undefined?false:users.map((element, index) =>
-        <li className="list-group-item vw-90" key={index}>{
+        <li className={index===selectedUser?"active list-group-item vw-90":"list-group-item vw-90"}
+            id={index} key={index} onClick={()=>setSelectedUser(index)}> {
             element.padEnd(30)+
             check_undefined(usersSettings,element,'RealName', 40)+
             check_undefined(usersSettings,element,'description',60)+
