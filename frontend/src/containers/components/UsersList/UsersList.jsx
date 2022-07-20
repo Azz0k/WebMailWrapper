@@ -2,6 +2,9 @@ import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../../service";
 import {Error} from "../../reducers";
+import {Modal} from "bootstrap";
+import ModalComponent from "../ModalComponent/ModalComponent";
+
 
 const check_undefined = (sourceObj, firstKey, secondKey, length) => {
     if (sourceObj===undefined){
@@ -20,13 +23,13 @@ const check_undefined = (sourceObj, firstKey, secondKey, length) => {
     else {
         return result.padEnd(length);
     }
-
-
 }
 
 const UsersList = ({users, domain}) => {
     const [usersSettings, setUserSettings] = useState({});
     const [selectedUser, setSelectedUser] = useState(0);
+    const [showModal, setShowModal] = useState(false);
+    const searchFieldData = useSelector(state => state.SearchField);
     const dispatch = useDispatch();
     useEffect(()=>{
         apiClient.get("/1.0/"+domain)
@@ -36,10 +39,14 @@ const UsersList = ({users, domain}) => {
             .catch(error=> dispatch(Error(error.message)));
 
     },[users]);
-
-    const listItems = users===undefined?false:users.map((element, index) =>
-        <li className={index===selectedUser?"active list-group-item vw-90":"list-group-item vw-90"}
-            id={index} key={index} onClick={()=>setSelectedUser(index)}> {
+    const defaultClassName = "list-group-item vw-90";
+    const activeClassName = "active list-group-item vw-90";
+    const filteredUsers = searchFieldData ===''? users:users.filter(u => u.includes(searchFieldData));
+    const listItems = filteredUsers===undefined?false:filteredUsers.map((element, index) =>
+        <li className={index===selectedUser?activeClassName:defaultClassName}
+            id={index} key={index}
+            onClick={()=>setSelectedUser(index)}
+            onDoubleClick={()=>setShowModal(true)}> {
             element.padEnd(30)+
             check_undefined(usersSettings,element,'RealName', 40)+
             check_undefined(usersSettings,element,'description',60)+
@@ -52,6 +59,7 @@ const UsersList = ({users, domain}) => {
             <ul className="list-group">
                 <pre>{listItems}</pre>
             </ul>
+            <ModalComponent title={filteredUsers[selectedUser]} show={showModal} hide ={()=>setShowModal(false)}/>
         </div>
     );
 };

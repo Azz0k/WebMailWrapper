@@ -8,10 +8,11 @@ const initialState = {
     },
     isAuthenticated: false,
     error: null,
+    SearchField: '',
 };
 
-const usersByDomains = createSlice({
-    name: 'usersByDomains',
+const firstSlice = createSlice({
+    name: 'firstSlice',
     initialState,
     reducers: {
         Login: (state, action) => {
@@ -27,12 +28,16 @@ const usersByDomains = createSlice({
             state.userdata = initialState.userdata;
             state.error = null
         },
+        Search: (state, action) =>{
+            state.SearchField = action.payload;
+        },
 }
 });
 
-const {actions, reducer} = usersByDomains;
+
+const {actions, reducer} = firstSlice;
 export const {
-    Login, Logout, Error
+    Login, Logout, Error, Search,
 } = actions;
 
 

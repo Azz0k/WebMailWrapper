@@ -2,7 +2,7 @@ import React,{useEffect, useState}  from "react";
 import Status from "../components/Status/Status";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../service";
-import {Error} from "../reducers";
+import {Error, Search} from "../reducers";
 import UsersList from "../components/UsersList/UsersList";
 
 const SelectDomain =({domains, selectedDomain, onChange})=>{
@@ -22,6 +22,7 @@ const NavTabs = () => {
     const [userData, setUserData] = useState({});
     const [domains, setDomains] = useState([]);
     const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
+    const [searchFieldData, setSearchFieldData] = useState('');
     useEffect(()=>{
         apiClient.get('/users')
             .then(response => {
@@ -35,17 +36,23 @@ const NavTabs = () => {
             .catch(error=> dispatch(Error(error.message)));
         },[]
     );
-    const handleChangeDomain = (event) => {
-        setSelectedDomain(event.target.value);
+    const handleSearchSubmit = (event) => {
+        event.preventDefault();
+        dispatch(Search(searchFieldData));
     };
+
     return(
       <>
           <nav className="navbar bg-light m-1000">
             <div className="container-fluid">
                 <a className="navbar-brand">Select domain:</a>
-                <SelectDomain domains={domains} selectedDomain={selectedDomain} onChange={(e)=>handleChangeDomain(e)} />
-                <form className="d-flex" role="search">
-                    <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
+                <SelectDomain domains={domains} selectedDomain={selectedDomain}
+                              onChange={(event)=>setSelectedDomain(event.target.value)} />
+                <form className="d-flex" role="search"
+                      onSubmit={(event)=>handleSearchSubmit(event)}>
+                    <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                           value={searchFieldData}
+                           onChange={(event)=>setSearchFieldData(event.target.value)}/>
                         <button className="btn btn-outline-success" type="submit">Search</button>
                 </form>
             </div>
