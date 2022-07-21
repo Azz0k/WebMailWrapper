@@ -128,26 +128,28 @@ def test_domains_and_users():
             print(helper.get_group(g, d))
 
 
-def test_get_set_acl2(calendar_username: str = 'testpublic@energospb.ru'):
+def test_get_set_acl2(target_username, calendar_username: str = 'itservicedesk@energospb.ru'):
     password: str = keyring.get_password(system_name, username)
     helper: CGPROHelper = CGPROHelper(username, password)
-    test_user2 = 'testreceiver@energospb.ru'
     mailboxes = helper.get_mailboxes(calendar_username)
     calendars_to_share = []
     for key, value in mailboxes.items():
-        try:
-            # noinspection SpellCheckingInspection
-            if base64.b64decode(key).decode('utf-16BE') != 'Календарь':
-                if ('Class' in value) and (value['Class'] == 'IPF.Appointment'):
-                    calendars_to_share.append(key)
-        except binascii.Error:
-            pass
+        # noinspection SpellCheckingInspection
+        if key != '&BBoEMAQ7BDUEPQQ0BDAEQARM-':
+            if ('Class' in value) and (value['Class'] == 'IPF.Appointment'):
+                calendars_to_share.append(key)
     # TODO - change test_user2 to all users in all domains
+    result_alias = {}
     for calendar in calendars_to_share:
-        rights = helper.get_mailbox_rights(calendar_username, calendar, test_user2)
-        if rights != helper.get_rights():
-            helper.set_mailbox_rights(calendar_username, calendar, test_user2)
-            helper.set_mailbox_aliases(test_user2, {calendar: helper.mailbox_alias(calendar_username, calendar)})
+        helper.set_mailbox_rights(calendar_username, calendar, target_username)
+        result_alias[calendar] = helper.mailbox_alias(calendar_username, calendar)
+    helper.set_mailbox_aliases(target_username, result_alias)
+
+
+def clear_aliases(user_name):
+    password: str = keyring.get_password(system_name, username)
+    helper: CGPROHelper = CGPROHelper(username, password)
+    helper.set_mailbox_aliases(user_name, {})
 
 
 def get_one_acc_setting(*args):
@@ -206,6 +208,5 @@ if __name__ == '__main__':
         except Exception as error:
             print('Error: {}'.format(error))
     else:
-        test_get_account_settings()
-
+        test_get_set_acl2('milokum.pavel@energospb.ru')
 
