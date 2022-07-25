@@ -5,18 +5,90 @@ import apiClient from "../service";
 import {Error, Search} from "../reducers";
 import UsersList from "../components/UsersList/UsersList";
 
-const SelectDomain =({domains, selectedDomain, onChange})=>{
-    const options = domains.map((element,index) =>
+const NavBar = ({children}) => {
+    return(
+                 <nav className="navbar bg-light m-1000">
+            <div className="container-fluid">
+                <a className="navbar-brand">Выберите домен:</a>
+                {children}
+            </div>
+          </nav>
+    );
+};
+
+const SearchForm = ({value, handleSubmit, handleChange}) => {
+  return(
+      <form className="d-flex" role="search"
+            onSubmit={(event)=>handleSubmit(event)}>
+            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"
+                value={value}
+                           onChange={(event)=>handleChange(event.target.value)}/>
+                        <button className="btn btn-outline-success" type="submit">Search</button>
+      </form>
+  );
+};
+
+const SelectItem =({items, value, onValueChange, propClassName})=>{
+    const options = items.map((element, index) =>
             <option value={element} key={index}>{element}</option>
     );
     return(
-            <select className="form-select form-select-sm w-25" aria-label="Domains select" value={selectedDomain} onChange={onChange}>
+            <select
+                className={"form-select form-select-sm "+propClassName}
+                value={value}
+                onChange={(event) => onValueChange(event.target.value)}
+            >
                 {options}
             </select>
     );
 };
 
+const ListItem = ({active, value, id, onItemClick}) => {
+    const clsName = active?" active":"";
+    return(
+        <li className={"list-group-item "+clsName}
+                id={id}
+                onClick={onItemClick}
+        >
+            {value}
+        </li>
+    );
+};
+
+const VerticalTabList = ({items, selectedItem, handleItemSelect}) => {
+    const buttons = items.map((e,i)=><ListItem value={e} active={i===selectedItem} key={i} onItemClick={()=>handleItemSelect(i)}/>);
+    return(
+        <ul className="list-group">
+
+            {buttons}
+        </ul>
+    );
+};
+
+const TabPane = ({children, isActive}) => {
+    const clnName = isActive?" show active":"";
+    return(
+          <div className={"tab-pane fade"+clnName}
+               role="tabpanel"
+          >
+              {children}
+          </div>
+    );
+}
+
+const TabContent = ({selectedItem, items}) => {
+    const tabItems = items.map((e,i) => <TabPane isActive={selectedItem===i} key={i} >{e}</TabPane>);
+    return(
+        <div className="tab-content ms-3">
+            {tabItems}
+        </div>
+    );
+};
+
+
 const NavTabs = () => {
+    const tabMenuItems = ["Status", "Users", "Groups", "Redirectors", "Aliases"];
+    const [activeTab, setActiveTab] = useState(0);
     const dispatch = useDispatch();
     const [users, setUsers] = useState({});
     const [userData, setUserData] = useState({});
@@ -40,67 +112,25 @@ const NavTabs = () => {
         event.preventDefault();
         dispatch(Search(searchFieldData));
     };
-
+    const tabPanelItems = [<Status users={users}/>,<UsersList users={users[selectedDomain]} domain={selectedDomain}/>,3,4,5];
     return(
       <>
-          <nav className="navbar bg-light m-1000">
-            <div className="container-fluid">
-                <a className="navbar-brand">Select domain:</a>
-                <SelectDomain domains={domains} selectedDomain={selectedDomain}
-                              onChange={(event)=>setSelectedDomain(event.target.value)} />
-                <form className="d-flex" role="search"
-                      onSubmit={(event)=>handleSearchSubmit(event)}>
-                    <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search"
-                           value={searchFieldData}
-                           onChange={(event)=>setSearchFieldData(event.target.value)}/>
-                        <button className="btn btn-outline-success" type="submit">Search</button>
-                </form>
-            </div>
-          </nav>
-
+          <NavBar>
+              <SelectItem
+                  items={domains}
+                  value={selectedDomain}
+                  onValueChange={setSelectedDomain}
+                  propClassName="w-25"
+                />
+              <SearchForm
+                  value={searchFieldData}
+                  handleChange={setSearchFieldData}
+                  handleSubmit={handleSearchSubmit}
+              />
+          </NavBar>
           <div className="d-flex align-items-start mt-3">
-              <div className="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist"
-                   aria-orientation="vertical">
-                  <button className="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill"
-                          data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home"
-                          aria-selected="true">Status
-                  </button>
-                  <button className="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill"
-                          data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile"
-                          aria-selected="false">Users
-                  </button>
-                  <button className="nav-link" id="v-pills-disabled-tab" data-bs-toggle="pill"
-                          data-bs-target="#v-pills-disabled" type="button" role="tab" aria-controls="v-pills-disabled"
-                          aria-selected="false" >Groups
-                  </button>
-                  <button className="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill"
-                          data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages"
-                          aria-selected="false">Redirectors
-                  </button>
-                  <button className="nav-link" id="v-pills-settings-tab" data-bs-toggle="pill"
-                          data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings"
-                          aria-selected="false">Aliases
-                  </button>
-              </div>
-              <div className="tab-content" id="v-pills-tabContent">
-                  <div className="tab-pane fade show active" id="v-pills-home" role="tabpanel"
-                       aria-labelledby="v-pills-home-tab" tabIndex="0">
-                      <Status users={users}/>
-                  </div>
-                  <div className="tab-pane fade" id="v-pills-profile" role="tabpanel"
-                       aria-labelledby="v-pills-profile-tab" tabIndex="0">
-                      <UsersList users={users[selectedDomain]} domain={selectedDomain}/>
-                  </div>
-                  <div className="tab-pane fade" id="v-pills-disabled" role="tabpanel"
-                       aria-labelledby="v-pills-disabled-tab" tabIndex="0">3
-                  </div>
-                  <div className="tab-pane fade" id="v-pills-messages" role="tabpanel"
-                       aria-labelledby="v-pills-messages-tab" tabIndex="0">4
-                  </div>
-                  <div className="tab-pane fade" id="v-pills-settings" role="tabpanel"
-                       aria-labelledby="v-pills-settings-tab" tabIndex="0">5
-                  </div>
-              </div>
+              <VerticalTabList items={tabMenuItems} selectedItem={activeTab} handleItemSelect={setActiveTab}/>
+              <TabContent items={tabPanelItems} selectedItem={activeTab}/>
           </div>
       </>
     );
