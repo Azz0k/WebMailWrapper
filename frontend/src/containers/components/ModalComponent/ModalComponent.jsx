@@ -2,7 +2,7 @@ import React, {useState} from "react";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 
-const ModalComponent = ({children, title , show, hide}) => {
+const ModalComponent = ({children, title, show, hide}) => {
     const [isChanged, setIsChanged] = useState(false);
     return(
             <Modal

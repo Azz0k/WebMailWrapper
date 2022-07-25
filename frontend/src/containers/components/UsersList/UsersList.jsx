@@ -59,7 +59,10 @@ const UsersList = ({users, domain}) => {
             <ul className="list-group">
                 <pre>{listItems}</pre>
             </ul>
-            <ModalComponent title={filteredUsers[selectedUser]} show={showModal} hide ={()=>setShowModal(false)}/>
+            <ModalComponent
+                title={filteredUsers && filteredUsers[selectedUser]}
+                show={showModal} hide={()=>setShowModal(false)}>
+            </ModalComponent>
         </div>
     );
 };
