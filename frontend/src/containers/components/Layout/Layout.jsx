@@ -3,7 +3,7 @@ import {useDispatch, useSelector} from "react-redux";
 import LoginForm from "../../pages/LoginForm";
 import Header from "../Header/Header";
 import apiClient from "../../service/site-service";
-import {Login, Error} from "../../reducers";
+import {Login, Error} from "../../reducers/LoginSlice";
 
 const ErrorLog = () =>{
     const error = useSelector(state => state.error);
@@ -19,7 +19,7 @@ const ErrorLog = () =>{
 };
 
 const Layout = ({children}) => {
-    const isAuthenticated = useSelector(state => state.isAuthenticated);
+    const isAuthenticated = useSelector(state => state.login.isAuthenticated);
     const component_to_render = isAuthenticated ? children : <LoginForm />
     const dispatch = useDispatch();
     useEffect(()=>{

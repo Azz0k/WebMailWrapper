@@ -2,7 +2,8 @@ import React,{useEffect, useState}  from "react";
 import Status from "../components/Status/Status";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../service";
-import {Error, Search} from "../reducers";
+import {Error} from "../reducers/LoginSlice";
+import {Search} from "../reducers/SearchSlice";
 import UsersList from "../components/UsersList/UsersList";
 
 const NavBar = ({children}) => {

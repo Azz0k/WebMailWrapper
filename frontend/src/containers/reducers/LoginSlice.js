@@ -1,18 +1,18 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit';
 
 
 const initialState = {
-    userdata: {
+    headUserData: {
         username: null,
         password: null,
     },
     isAuthenticated: false,
     error: null,
-    SearchField: '',
+
 };
 
-const firstSlice = createSlice({
-    name: 'firstSlice',
+const loginSlice = createSlice({
+    name: 'login',
     initialState,
     reducers: {
         Login: (state, action) => {
@@ -25,20 +25,17 @@ const firstSlice = createSlice({
     },
         Logout: (state, action) => {
             state.isAuthenticated = false;
-            state.userdata = initialState.userdata;
+            state.userdata = initialState.headUserData;
             state.error = null
-        },
-        Search: (state, action) =>{
-            state.SearchField = action.payload;
         },
 }
 });
 
 
-const {actions, reducer} = firstSlice;
+const {actions, reducer} = loginSlice;
 export const {
-    Login, Logout, Error, Search,
+    Login, Logout, Error,
 } = actions;
 
 
-export default  reducer;
+export default reducer;

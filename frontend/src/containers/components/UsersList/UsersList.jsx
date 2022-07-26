@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../../service";
-import {Error} from "../../reducers";
+import {Error} from "../../reducers/LoginSlice";
 import {Modal} from "bootstrap";
 import ModalComponent from "../ModalComponent/ModalComponent";
 
@@ -29,7 +29,7 @@ const UsersList = ({users, domain}) => {
     const [usersSettings, setUserSettings] = useState({});
     const [selectedUser, setSelectedUser] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    const searchFieldData = useSelector(state => state.SearchField);
+    const searchFieldData = useSelector(state => state.search.SearchField);
     const dispatch = useDispatch();
     useEffect(()=>{
         apiClient.get("/1.0/"+domain)
