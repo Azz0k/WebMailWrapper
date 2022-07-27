@@ -7,7 +7,7 @@ const store = configureStore({
     reducer:{
         login: loginReducer,
         search: searchReducer,
-        domain: domainReducer,
+        domains: domainReducer,
     }
 });
 

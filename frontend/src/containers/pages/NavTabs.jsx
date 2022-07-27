@@ -5,6 +5,7 @@ import apiClient from "../service";
 import {Error} from "../reducers/LoginSlice";
 import {Search} from "../reducers/SearchSlice";
 import UsersList from "../components/UsersList/UsersList";
+import {fetchDomains, selectDomains} from "../reducers/DomainSlice";
 
 const NavBar = ({children}) => {
     return(
@@ -94,9 +95,12 @@ const NavTabs = () => {
     const [users, setUsers] = useState({});
     const [userData, setUserData] = useState({});
     const [domains, setDomains] = useState([]);
+    const test = useSelector(selectDomains);
+    console.log(test);
     const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
     const [searchFieldData, setSearchFieldData] = useState('');
     useEffect(()=>{
+        dispatch(fetchDomains());
         apiClient.get('/users')
             .then(response => {
              setUsers(response.data);

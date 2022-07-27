@@ -93,10 +93,18 @@ def get_users_settings(domain_name):
 
 @get_function
 @app.route('/api/users', methods=['GET'])
-def new_all_users():
+def get_all_users():
     mail_serv: helper.CGPROHelper = helper.CGPROHelper(session['username'], session['password'])
-    users = mail_serv.get_all_users_by_domains()
-    return users
+    result = mail_serv.get_all_users_by_domains()
+    return result
+
+
+@get_function
+@app.route('/api/domains', methods=['GET'])
+def get_all_domains():
+    mail_serv: helper.CGPROHelper = helper.CGPROHelper(session['username'], session['password'])
+    result = mail_serv.get_domains()
+    return jsonify(result)
 
 
 @app.route('/api/logout')

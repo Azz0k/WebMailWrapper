@@ -1,8 +1,10 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSelector, createSlice} from "@reduxjs/toolkit";
+import apiClient from "../service";
 
 const initialState = {
-    domains: [],
-    status: "idle"
+    items: [],
+    status: "idle",
+    error: null,
 };
 
 const domainSlice = createSlice({
@@ -12,12 +14,24 @@ const domainSlice = createSlice({
         domainsLoading: (state, action)=>{
             state.status = "loading";
         },
+        domainsFailed:(state, action)=>{
+            state.status = "error";
+            state.error = action.payload;
+        },
         domainsLoaded: (state, action)=>{
-            state.domains = action.payload;
+            state.items = action.payload;
             state.status = "idle";
         }
     }
 });
 
-export const {domainsLoaded,domainsLoading} = domainSlice.actions;
+export const fetchDomains = () => (dispatch) => {
+    dispatch(domainsLoading());
+    apiClient.get("/domains")
+        .then(res=>dispatch(domainsLoaded(res.data)))
+        .catch(err=>dispatch(domainsFailed(err.message)))
+};
+const domains = (state) => state.domains;
+export const selectDomains = createSelector(domains, item => item);
+export const {domainsLoaded,domainsLoading, domainsFailed} = domainSlice.actions;
 export default domainSlice.reducer;
