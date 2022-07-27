@@ -1,4 +1,4 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSelector, createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
     SearchField: '',
@@ -14,5 +14,7 @@ const searchSlice = createSlice({
     }
 });
 
+const search = (state) => state.search.SearchField;
+export const selectSearch = createSelector(search, item => item);
 export const {Search} = searchSlice.actions;
 export default searchSlice.reducer;

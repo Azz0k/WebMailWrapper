@@ -4,6 +4,7 @@ import apiClient from "../../service";
 import {Error} from "../../reducers/LoginSlice";
 import {Modal} from "bootstrap";
 import ModalComponent from "../ModalComponent/ModalComponent";
+import {selectSearch} from "../../reducers/SearchSlice";
 
 
 const check_undefined = (sourceObj, firstKey, secondKey, length) => {
@@ -29,7 +30,7 @@ const UsersList = ({users, domain}) => {
     const [usersSettings, setUserSettings] = useState({});
     const [selectedUser, setSelectedUser] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    const searchFieldData = useSelector(state => state.search.SearchField);
+    const searchFieldData = useSelector(selectSearch);
     const dispatch = useDispatch();
     useEffect(()=>{
         apiClient.get("/1.0/"+domain)
