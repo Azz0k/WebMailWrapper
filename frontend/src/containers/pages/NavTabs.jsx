@@ -2,9 +2,9 @@ import React,{useEffect, useState}  from "react";
 import Status from "../components/Status/Status";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../service";
-import {Error,Search} from "../reducers/GlobalSlice";
+import {domainsLoaded, Error, fetchEntity, Search} from "../reducers/GlobalSlice";
 import UsersList from "../components/UsersList/UsersList";
-import {fetchDomains, selectDomains} from "../reducers/GlobalSlice";
+import {selectDomains} from "../reducers/GlobalSlice";
 
 const NavBar = ({children}) => {
     return(
@@ -44,8 +44,9 @@ const SelectItem =({items, value, onValueChange, propClassName})=>{
     );
 };
 
-const ListItem = ({active, value, id, onItemClick}) => {
-    const clsName = active?" active":"";
+const ListItem = ({active, value, id, onItemClick, disabled}) => {
+    let clsName = active?" active":"";
+    clsName = disabled?" disabled":clsName;
     return(
         <li className={"list-group-item "+clsName}
                 id={id}
@@ -56,8 +57,8 @@ const ListItem = ({active, value, id, onItemClick}) => {
     );
 };
 
-const VerticalTabList = ({items, selectedItem, handleItemSelect}) => {
-    const buttons = items.map((e,i)=><ListItem value={e} active={i===selectedItem} key={i} onItemClick={()=>handleItemSelect(i)}/>);
+const VerticalTabList = ({items, selectedItem, handleItemSelect, disabled}) => {
+    const buttons = items.map((e,i)=><ListItem disabled={disabled} value={e} active={i===selectedItem} key={i} onItemClick={()=>handleItemSelect(i)}/>);
     return(
         <ul className="list-group">
 
@@ -92,12 +93,13 @@ const NavTabs = () => {
     const [activeTab, setActiveTab] = useState(0);
     const dispatch = useDispatch();
     const [users, setUsers] = useState({});
-    const [userData, setUserData] = useState({});
     const domains = useSelector(selectDomains);
+    const status = useSelector(state => state.status);
     const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
     const [searchFieldData, setSearchFieldData] = useState('');
     useEffect(()=>{
-        dispatch(fetchDomains());
+        //dispatch(fetchDomains());
+        dispatch(fetchEntity("/domains", domainsLoaded));
         apiClient.get('/users')
             .then(response => {
              setUsers(response.data);
@@ -109,7 +111,7 @@ const NavTabs = () => {
         event.preventDefault();
         dispatch(Search(searchFieldData));
     };
-    const tabPanelItems = [<Status users={users}/>,<UsersList users={users[selectedDomain]} domain={selectedDomain}/>,3,4,5];
+    const tabPanelItems = [<Status users={users}/>,<UsersList users={users[selectedDomain]} domain={selectedDomain}/>,3,4,5,];
     return(
       <>
           <NavBar>
@@ -126,7 +128,7 @@ const NavTabs = () => {
               />
           </NavBar>
           <div className="d-flex align-items-start mt-3">
-              <VerticalTabList items={tabMenuItems} selectedItem={activeTab} handleItemSelect={setActiveTab}/>
+              <VerticalTabList items={tabMenuItems} selectedItem={activeTab} handleItemSelect={setActiveTab} disabled={status==="loading"}/>
               <TabContent items={tabPanelItems} selectedItem={activeTab}/>
           </div>
       </>

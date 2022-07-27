@@ -20,28 +20,27 @@ const globalSlice = createSlice({
             state.isAuthenticated = true;
             state.username = action.payload;
             state.error = null;
+            state.status = "idle";
         },
         Error: (state, action) => {
             state.error = action.payload;
+            state.status = "error";
     },
         Logout: (state, action) => {
             state.isAuthenticated = false;
             state.userdata = initialState.username;
-            state.error = null
+            state.error = null;
         },
         Search: (state, action) =>{
             state.SearchField = action.payload;
         },
-        domainsLoading: (state, action)=>{
+        Loading: (state, action)=>{
             state.status = "loading";
-        },
-        domainsFailed:(state, action)=>{
-            state.status = "error";
-            state.error = action.payload;
         },
         domainsLoaded: (state, action)=>{
             state.domains = action.payload;
             state.status = "idle";
+            state.error = null;
         },
 }
 });
@@ -49,11 +48,11 @@ const globalSlice = createSlice({
 const search = (state) => state.SearchField;
 export const selectSearch = createSelector(search, item => item);
 
-export const fetchDomains = () => (dispatch) => {
-    dispatch(domainsLoading());
-    apiClient.get("/domains")
-        .then(res=>dispatch(domainsLoaded(res.data)))
-        .catch(err=>dispatch(domainsFailed(err.message)))
+export const fetchEntity = (uri, action)  => (dispatch) => {
+    dispatch(Loading());
+    apiClient.get(uri)
+        .then(res=>dispatch(action(res.data)))
+        .catch(err=>dispatch(Error(err.message)))
 };
 
 const domains = (state) => state.domains;
@@ -61,7 +60,7 @@ export const selectDomains = createSelector(domains, item => item);
 
 const {actions, reducer} = globalSlice;
 export const {
-    Login, Logout, Error,Search,domainsLoaded,domainsLoading, domainsFailed,
+    Login, Logout, Error,Search,domainsLoaded,Loading,
 } = actions;
 
 

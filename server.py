@@ -138,7 +138,7 @@ def login():
         if domains:
             session['username'] = data['username']
             session['password'] = data['password']
-            return jsonify({'http': 200, 'username': session['username']})
+            return session['username']
     abort(401)
 
 
