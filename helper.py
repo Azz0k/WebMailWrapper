@@ -17,6 +17,7 @@ class CGPROHelper:
     __server: CGPCLI.Server
     # noinspection SpellCheckingInspection
     __full_rights: str = 'cdilrsw'
+    __read_rights: str = 'lr'
 
     def __init__(self, login: str, password: str, address: str = '10.16.252.45') -> None:
         self.__login = login
@@ -43,7 +44,7 @@ class CGPROHelper:
 
     @staticmethod
     def get_rights():
-        return CGPROHelper.__full_rights
+        return CGPROHelper.__read_rights
 
     @staticmethod
     def mailbox_name_quoted(mailbox_name: str):
@@ -142,6 +143,7 @@ def test_get_set_acl2(target_username, calendar_username: str = 'itservicedesk@e
     result_alias = {}
     for calendar in calendars_to_share:
         helper.set_mailbox_rights(calendar_username, calendar, target_username)
+        #print(helper.get_mailbox_rights(calendar_username, calendar, target_username))
         result_alias[calendar] = helper.mailbox_alias(calendar_username, calendar)
     helper.set_mailbox_aliases(target_username, result_alias)
 
