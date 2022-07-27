@@ -2,10 +2,9 @@ import React,{useEffect, useState}  from "react";
 import Status from "../components/Status/Status";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../service";
-import {Error} from "../reducers/LoginSlice";
-import {Search} from "../reducers/SearchSlice";
+import {Error,Search} from "../reducers/GlobalSlice";
 import UsersList from "../components/UsersList/UsersList";
-import {fetchDomains, selectDomains} from "../reducers/DomainSlice";
+import {fetchDomains, selectDomains} from "../reducers/GlobalSlice";
 
 const NavBar = ({children}) => {
     return(
@@ -94,9 +93,7 @@ const NavTabs = () => {
     const dispatch = useDispatch();
     const [users, setUsers] = useState({});
     const [userData, setUserData] = useState({});
-    const [domains, setDomains] = useState([]);
-    const test = useSelector(selectDomains);
-    console.log(test);
+    const domains = useSelector(selectDomains);
     const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
     const [searchFieldData, setSearchFieldData] = useState('');
     useEffect(()=>{
@@ -104,11 +101,6 @@ const NavTabs = () => {
         apiClient.get('/users')
             .then(response => {
              setUsers(response.data);
-             let temp =[];
-             for (const key in response.data){
-                 temp.push(key);
-             }
-             setDomains(temp);
             })
             .catch(error=> dispatch(Error(error.message)));
         },[]

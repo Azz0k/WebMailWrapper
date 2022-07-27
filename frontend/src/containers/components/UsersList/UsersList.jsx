@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../../service";
-import {Error} from "../../reducers/LoginSlice";
+import {Error} from "../../reducers/GlobalSlice";
 import {Modal} from "bootstrap";
 import ModalComponent from "../ModalComponent/ModalComponent";
-import {selectSearch} from "../../reducers/SearchSlice";
+import {selectSearch} from "../../reducers/GlobalSlice";
 
 
 const check_undefined = (sourceObj, firstKey, secondKey, length) => {

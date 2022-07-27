@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import {Login} from "../reducers/LoginSlice";
+import {Login} from "../reducers/GlobalSlice";
 import apiClient from "../service";
 import {useDispatch} from "react-redux";
-import {Error} from "../reducers/LoginSlice";
+import {Error} from "../reducers/GlobalSlice";
 
 const LoginForm = () => {
     const dispatch = useDispatch()

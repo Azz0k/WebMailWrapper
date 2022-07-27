@@ -1,14 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import loginReducer from "./containers/reducers/LoginSlice";
-import searchReducer from "./containers/reducers/SearchSlice";
-import domainReducer from "./containers/reducers/DomainSlice";
+import reducer from "./containers/reducers/GlobalSlice";
 
-const store = configureStore({
-    reducer:{
-        login: loginReducer,
-        search: searchReducer,
-        domains: domainReducer,
-    }
-});
+const store = configureStore({reducer});
 
 export default store;

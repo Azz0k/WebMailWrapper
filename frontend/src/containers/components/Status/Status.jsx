@@ -1,10 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import apiClient from "../../service";
-import {Error} from "../../reducers/LoginSlice";
+import React  from "react";
+import {useSelector} from "react-redux";
+
 
 const Status = ({users}) => {
-    const username = useSelector(state => state.login.headUserData.username)
+    const username = useSelector(state => state.username)
     const usersLength = () => {
         let result = 0;
         for (const key in users) {
