@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import {Login} from "../reducers/GlobalSlice";
-import apiClient from "../service";
+import {postCredentials} from "../reducers/GlobalSlice";
 import {useDispatch} from "react-redux";
-import {Error} from "../reducers/GlobalSlice";
 
 const LoginForm = () => {
     const dispatch = useDispatch()
@@ -10,11 +8,7 @@ const LoginForm = () => {
     const [password, setPassword] = useState('')
     const handleSubmit = (event) => {
         event.preventDefault();
-        apiClient.post('/login',{username,password})
-            .then(response=>{
-                dispatch(Login({username, password}))
-            })
-            .catch(error=>dispatch(Error(error.message)));
+        dispatch(postCredentials(username,password));
     };
     
     return (

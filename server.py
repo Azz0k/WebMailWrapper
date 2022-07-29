@@ -88,7 +88,7 @@ def get_users_settings(domain_name):
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         users_data = dict(zip(users_names, executor.map(user_setting_pool_worker, temp_tuple)))
-    return users_data
+    return {domain_name: users_data}
 
 
 @get_function

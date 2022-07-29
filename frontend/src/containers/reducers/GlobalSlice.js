@@ -9,6 +9,7 @@ const initialState = {
     SearchField: '',
     domains: [],
     status: "idle",
+    users: {},
 
 };
 
@@ -42,6 +43,11 @@ const globalSlice = createSlice({
             state.status = "idle";
             state.error = null;
         },
+        usersFromDomainLoaded: (state, action) => {
+            state.status = "idle";
+            state.error = null;
+            state.users = {...state.users, ...action.payload}
+        },
 }
 });
 
@@ -55,12 +61,22 @@ export const fetchEntity = (uri, action)  => (dispatch) => {
         .catch(err=>dispatch(Error(err.message)))
 };
 
-const domains = (state) => state.domains;
-export const selectDomains = createSelector(domains, item => item);
+export const postCredentials = (username,password) => (dispatch) => {
+    dispatch(Loading());
+    apiClient.post('/login',{username,password})
+            .then(response=>{
+                dispatch(Login(username))
+            })
+            .catch(error=>dispatch(Error(error.message)));
+}
 
+const domains = (state) => state.domains;
+const users = (state) => state.users;
+export const selectDomains = createSelector(domains, item => item);
+export const selectUsers = createSelector(users, item => item);
 const {actions, reducer} = globalSlice;
 export const {
-    Login, Logout, Error,Search,domainsLoaded,Loading,
+    Login, Logout, Error,Search, domainsLoaded,Loading,usersFromDomainLoaded,
 } = actions;
 
 

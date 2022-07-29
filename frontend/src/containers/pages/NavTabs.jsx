@@ -98,8 +98,6 @@ const NavTabs = () => {
     const [selectedDomain, setSelectedDomain] = useState('energospb.ru');
     const [searchFieldData, setSearchFieldData] = useState('');
     useEffect(()=>{
-        //dispatch(fetchDomains());
-        dispatch(fetchEntity("/domains", domainsLoaded));
         apiClient.get('/users')
             .then(response => {
              setUsers(response.data);

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import apiClient from "../../service";
-import {Error} from "../../reducers/GlobalSlice";
+import {Error, selectUsers} from "../../reducers/GlobalSlice";
 import {Modal} from "bootstrap";
 import ModalComponent from "../ModalComponent/ModalComponent";
 import {selectSearch} from "../../reducers/GlobalSlice";
@@ -26,23 +26,15 @@ const check_undefined = (sourceObj, firstKey, secondKey, length) => {
     }
 }
 
-const UsersList = ({users, domain}) => {
-    const [usersSettings, setUserSettings] = useState({});
+const UsersList = ({domain}) => {
     const [selectedUser, setSelectedUser] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const searchFieldData = useSelector(selectSearch);
-    const dispatch = useDispatch();
-    useEffect(()=>{
-        apiClient.get("/1.0/"+domain)
-            .then(response => {
-                setUserSettings(response.data)
-            })
-            .catch(error=> dispatch(Error(error.message)));
-
-    },[users]);
+    const usersSettings = useSelector(selectUsers);
+    console.log(usersSettings);
     const defaultClassName = "list-group-item vw-90";
     const activeClassName = "active list-group-item vw-90";
-    const filteredUsers = searchFieldData ===''? users:users.filter(u => u.includes(searchFieldData));
+    const filteredUsers = searchFieldData ===''? []:[].filter(u => u.includes(searchFieldData));
     const listItems = filteredUsers===undefined?false:filteredUsers.map((element, index) =>
         <li className={index===selectedUser?activeClassName:defaultClassName}
             id={index} key={index}
